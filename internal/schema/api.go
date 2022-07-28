@@ -7,3 +7,11 @@ type HealthcheckResponse struct {
 }
 
 type GetGuestsResponse *[]types.Guest
+
+type UpdateAttendanceRequest struct {
+	Attendance types.Attendance `json:"attendance"`
+}
+
+type UpdateAttendanceResponse struct {
+	Message string `json:"message"`
+}

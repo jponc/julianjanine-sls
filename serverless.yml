@@ -52,13 +52,28 @@ functions:
     handler: bin/GetGuests
     events:
       - http:
-          path: /get-guests/{invitationCode}
+          path: /invitations/{invitationCode}/guests
           method: get
           cors: true
           request:
             parameters:
               paths:
                 invitationCode: true
+    environment:
+      DB_TABLE_NAME: ${self:custom.env.DB_TABLE_NAME}
+
+  UpdateAttendance:
+    handler: bin/UpdateAttendance
+    events:
+      - http:
+          path: /invitations/{invitationCode}/guests/{guestId}/update-attendance
+          method: post
+          cors: true
+          request:
+            parameters:
+              paths:
+                invitationCode: true
+                guestId: true
     environment:
       DB_TABLE_NAME: ${self:custom.env.DB_TABLE_NAME}
 

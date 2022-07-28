@@ -63,3 +63,71 @@ func (r *Repository) GetGuests(ctx context.Context, invitationCode string) (*[]t
 
 	return &guests, nil
 }
+
+func (r *Repository) UpdateAttendance(ctx context.Context, invitationCode string, guestId string, attendance types.Attendance) error {
+	item := guestItem{}
+
+	// Gets the item
+	input := &awsDynamodb.GetItemInput{
+		Key: map[string]*awsDynamodb.AttributeValue{
+			"PK": {
+				S: aws.String(fmt.Sprintf("Invite_%s", invitationCode)),
+			},
+			"SK": {
+				S: aws.String(fmt.Sprintf("Guest_%s", guestId)),
+			},
+		},
+		TableName: aws.String(r.dynamodbClient.GetTableName()),
+	}
+
+	output, err := r.dynamodbClient.GetItem(ctx, input)
+	if err != nil {
+		return fmt.Errorf("failed to get guest: %v", err)
+	}
+
+	if output.Item == nil {
+		return fmt.Errorf("guest not found: invite (%s), guestId (%s)", invitationCode, guestId)
+	}
+
+	err = dynamodbattribute.UnmarshalMap(output.Item, &item)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal map: %v", err)
+	}
+
+	// Set new attendance
+	guest := item.Data
+	guest.Attendance = attendance
+
+	// Update the guest record
+	err = r.SaveGuest(ctx, invitationCode, guestId, guest)
+	if err != nil {
+		return fmt.Errorf("failed to save guest: %v", err)
+	}
+
+	return nil
+}
+
+func (r *Repository) SaveGuest(ctx context.Context, invitationCode string, guestId string, guest types.Guest) error {
+	item := guestItem{
+		PK:   fmt.Sprintf("Invite_%s", invitationCode),
+		SK:   fmt.Sprintf("Guest_%s", guestId),
+		Data: guest,
+	}
+
+	itemMap, err := dynamodbattribute.MarshalMap(item)
+	if err != nil {
+		return fmt.Errorf("failed to ddb marshal result item record, %v", err)
+	}
+
+	input := &awsDynamodb.PutItemInput{
+		Item:      itemMap,
+		TableName: aws.String(r.dynamodbClient.GetTableName()),
+	}
+
+	_, err = r.dynamodbClient.PutItem(ctx, input)
+	if err != nil {
+		return fmt.Errorf("failed to put Guest: %v", err)
+	}
+
+	return nil
+}
