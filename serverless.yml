@@ -1,5 +1,6 @@
 service: julianjanine
 
+frameworkVersion: "^3.19.0"
 variablesResolutionMode: 20210326
 
 package:
@@ -21,21 +22,21 @@ provider:
     apiGateway: true
     lambda: true
 
-  # iam:
-  #   role:
-  #     statements:
-  #       # Only allow to a specific dynamo db table
-  #       - Effect: Allow
-  #         Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ssm:/${self:service}/${self:provider.stage}/DYNAMODB_TABLE_NAME}*'
-  #         Action:
-  #           - "dynamodb:*"
-  #       # Allow all SNS + Xray + ElasticSearch
-  #       - Effect: "Allow"
-  #         Resource: "*"
-  #         Action:
-  #           - sns:*
-  #           - xray:PutTraceSegments
-  #           - xray:PutTelemetryRecords
+  iam:
+    role:
+      statements:
+        # Only allow to a specific dynamo db table
+        - Effect: Allow
+          Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ssm:/${self:service}/${self:provider.stage}/DYNAMODB_TABLE_NAME}*'
+          Action:
+            - "dynamodb:*"
+        # Allow all SNS + Xray + ElasticSearch
+        - Effect: "Allow"
+          Resource: "*"
+          Action:
+            - sns:*
+            - xray:PutTraceSegments
+            - xray:PutTelemetryRecords
 
 functions:
   # == HTTP ==
@@ -46,3 +47,21 @@ functions:
           path: /healthcheck
           method: get
           cors: true
+
+  GetGuests:
+    handler: bin/GetGuests
+    events:
+      - http:
+          path: /get-guests/{invitationCode}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                invitationCode: true
+    environment:
+      DB_TABLE_NAME: ${self:custom.env.DB_TABLE_NAME}
+
+custom:
+  env:
+    DB_TABLE_NAME: ${ssm:/${self:service}/${self:provider.stage}/DYNAMODB_TABLE_NAME}

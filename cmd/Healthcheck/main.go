@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	service := api.NewService()
+	service := api.NewService(nil)
 	lambda.Start(service.Healthcheck)
 }
