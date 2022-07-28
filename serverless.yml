@@ -1,0 +1,48 @@
+service: julianjanine
+
+variablesResolutionMode: 20210326
+
+package:
+  patterns:
+    - '!./**'
+    - './bin/**'
+
+provider:
+  name: aws
+  runtime: go1.x
+  profile: jponc
+  memorySize: 128
+  region: ap-southeast-1 # Singapore
+  stage: ${opt:stage, 'staging'}
+  lambdaHashingVersion: "20201221"
+  apiGateway:
+    shouldStartNameWithService: true
+  tracing:
+    apiGateway: true
+    lambda: true
+
+  # iam:
+  #   role:
+  #     statements:
+  #       # Only allow to a specific dynamo db table
+  #       - Effect: Allow
+  #         Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${ssm:/${self:service}/${self:provider.stage}/DYNAMODB_TABLE_NAME}*'
+  #         Action:
+  #           - "dynamodb:*"
+  #       # Allow all SNS + Xray + ElasticSearch
+  #       - Effect: "Allow"
+  #         Resource: "*"
+  #         Action:
+  #           - sns:*
+  #           - xray:PutTraceSegments
+  #           - xray:PutTelemetryRecords
+
+functions:
+  # == HTTP ==
+  Healthcheck:
+    handler: bin/Healthcheck
+    events:
+      - http:
+          path: /healthcheck
+          method: get
+          cors: true
