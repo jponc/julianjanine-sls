@@ -1,25 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, Routes } from "react-router-dom";
+import { CeremonyScreen } from "./screens/CeremonyScreen";
+import { ContactUsScreen } from "./screens/ContactUs";
+import { FAQScreen } from "./screens/FAQScreen";
+import { HomeScreen } from "./screens/HomeScreen";
+import { OurStoryScreen } from "./screens/OurStoryScreen";
+import { ReceptionScreen } from "./screens/ReceptionScreen";
+import { SuppliersScreen } from "./screens/SuppliersScreen";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Routes>
+      <Route path="/" element={<HomeScreen />} />
+      <Route path="/our-story" element={<OurStoryScreen />} />
+      <Route path="/ceremony" element={<CeremonyScreen />} />
+      <Route path="/reception" element={<ReceptionScreen />} />
+      <Route path="/suppliers" element={<SuppliersScreen />} />
+      <Route path="/faq" element={<FAQScreen />} />
+      <Route path="/contact-us" element={<ContactUsScreen />} />
+    </Routes>
   );
 }
 
