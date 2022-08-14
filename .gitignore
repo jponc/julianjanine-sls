@@ -21,3 +21,5 @@ tmp/
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+data.csv

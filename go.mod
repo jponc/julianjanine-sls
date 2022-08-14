@@ -6,6 +6,8 @@ require (
 	github.com/aws/aws-lambda-go v1.23.0
 	github.com/aws/aws-sdk-go v1.44.64
 	github.com/aws/aws-xray-sdk-go v1.7.0
+	github.com/gocarina/gocsv v0.0.0-20220729221910-a7386ae0b221
+	github.com/google/uuid v1.1.2
 	github.com/sirupsen/logrus v1.4.2
 	gopkg.in/square/go-jose.v2 v2.6.0
 )

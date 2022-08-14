@@ -77,6 +77,11 @@ functions:
     environment:
       DB_TABLE_NAME: ${self:custom.env.DB_TABLE_NAME}
 
+  RebuildInvitations:
+    handler: bin/RebuildInvitations
+    environment:
+      DB_TABLE_NAME: ${self:custom.env.DB_TABLE_NAME}
+
 custom:
   env:
     DB_TABLE_NAME: ${ssm:/${self:service}/${self:provider.stage}/DYNAMODB_TABLE_NAME}
